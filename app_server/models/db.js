@@ -20,28 +20,31 @@ mongoose.connection.on("disconnected", () => {
 });
 
 
-const dbLogUri = "mongodb://localhost/Loc8rLog";
-const logDb = mongoose.createConnection(dbLogUri);
-
-logDb.on("connected", () => {
-    console.log(`Mongoose connected to ${dbLogUri}`);
-});
-
-logDb.on("error", (err) => {
-    console.log(`Mongoose connection error in ${dbLogUri}:\n ${err}`);
-});
-
-logDb.on("disconnected", () => {
-    console.log(`Mongoose disconnected ${dbLogUri}`);
-});
-
+// const dbLogUri = "mongodb://localhost/Loc8rLog";
+// const logDb = mongoose.createConnection(dbLogUri);
+//
+// logDb.on("connected", () => {
+//     console.log(`Mongoose connected to ${dbLogUri}`);
+// });
+//
+// logDb.on("error", (err) => {
+//     console.log(`Mongoose connection error in ${dbLogUri}:\n ${err}`);
+// });
+//
+// logDb.on("disconnected", () => {
+//     console.log(`Mongoose disconnected ${dbLogUri}`);
+// });
+//
 
 
 const gracefulShutdown = function (msg, callback) {
+    // console.log(`Mongoose disconnected through ${msg}`);
+    // mongoose.connection.close(() => {
+    //     logDb.close(callback);
+    // });
+
     console.log(`Mongoose disconnected through ${msg}`);
-    mongoose.connection.close(() => {
-        logDb.close(callback);
-    });
+    mongoose.connection.close();
 };
 
 
