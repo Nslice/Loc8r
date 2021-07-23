@@ -31,11 +31,10 @@ const reviewSchema = new mongoose.Schema({
         required: true
     },
     createdOn: {
-        type: String,
+        type: Date,
         required: true,
     }
 });
-
 
 
 const locationSchema = new mongoose.Schema({
@@ -53,6 +52,7 @@ const locationSchema = new mongoose.Schema({
     facilities: [String],
     coords: {
         type: [Number],
+        required: true,
         index: "2dsphere"
     },
     openingTimes: [openingTimeSchema],
