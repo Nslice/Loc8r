@@ -38,7 +38,7 @@ block content
                         .panel-heading
                             h2.panel-title Location map
                         .panel-body
-                            img.img-responsive.img-rounded(src="/images/map.png")
+                            img.img-responsive.img-rounded(src=`https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=350&center=lonlat:${location.coords.lng},${location.coords.lat}&zoom=16&marker=lonlat:${location.coords.lng},${location.coords.lat};color:%23ff0000;size:medium&apiKey=${geoapifyApiKey}`)
             .row
                 .col-xs-12
                     .panel.panel-primary.review-panel
@@ -53,7 +53,7 @@ block content
                                             span.rating
                                                 +outputRating(review.rating)
                                             span.reviewAuthor= review.author
-                                            small.reviewTimestamp= review.timestamp
+                                            small.reviewTimestamp= review.createdOn
                                         .col-xs-12
                                             p= review.reviewText
         .col-xs-12.col-md-3

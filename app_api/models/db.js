@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const dbUri = (process.env.NODE_ENV === "production")
     ? process.env.MONGODB_URI
     : "mongodb://localhost/Loc8r";
@@ -45,6 +44,7 @@ const gracefulShutdown = function (msg, callback) {
 
     console.log(`Mongoose disconnected through ${msg}`);
     mongoose.connection.close();
+    callback();
 };
 
 
@@ -64,5 +64,3 @@ process.on("SIGUSR2", () => {
 
 
 require("./locations");
-
-

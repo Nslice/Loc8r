@@ -50,7 +50,7 @@ const locationSchema = new mongoose.Schema({
         max: 5
     },
     facilities: [String],
-    coords: {
+    coords: { //TODO: вот это не пойдет надо переписать схему
         type: [Number],
         required: true,
         index: "2dsphere"

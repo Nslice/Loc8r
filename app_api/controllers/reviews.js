@@ -67,7 +67,7 @@ module.exports.reviewsReadOne = function (request, response) {
                 else if (!location)
                     sendJsonResponse(response, 404, {message: "location_id not found"});
                 else {
-                    if (location.reviews && location.reviews.length > 0) {
+                    if (location.reviews && location.reviews.length) {
                         const review = location.reviews.id(request.params.review_id);
                         if (review == null) // TODO: вот эту проверку надо наверное перепитсать на if (!review)
                             sendJsonResponse(response, 404, {message: "review_id not found"});
@@ -163,7 +163,7 @@ module.exports.reviewsDeleteOne = function (request, response) {
 };
 
 
-const sendJsonResponse = function (res, status, content) {
-    res.status(status);
-    res.json(content);
+const sendJsonResponse = function (response, status, content) {
+    response.status(status);
+    response.json(content);
 };

@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const Location = mongoose.model("Location");
 
 
+
+// TODO: для нового GeoJSON объекта в aggregate $geoNear можно указывать метры, так что это не нужно
 const radiansConvertor = (function () {
     const earthRadius = 6371;
     const getDistanceFromRads = rads => rads * earthRadius;
@@ -15,9 +17,10 @@ const radiansConvertor = (function () {
 
 
 module.exports.locationsListByDistance = function (request, response) {
-    const lng = Number.parseFloat(request.query.lng);
-    const lat = Number.parseFloat(request.query.lat);
-    const max = Number.parseFloat(request.query.max);
+    const lng = Number(request.query.lng);
+    const lat = Number(request.query.lat);
+    const max = Number(request.query.max) || 9000;
+    const limit = Number(request.query.limit) || 10;
 
     if (Number.isNaN(lng) || Number.isNaN(lat)) {
         sendJsonResponse(response, 400, {message: "'lng' and 'lat' query parameters are required"});
@@ -30,41 +33,33 @@ module.exports.locationsListByDistance = function (request, response) {
                     near: {type: "Point", coordinates: [lng, lat]},
                     spherical: true,
                     distanceField: "dist.calculated",
-                    maxDistance: 0.01,
+                    maxDistance: max
                 }
             },
-            {$limit: 10}
+            {$limit: limit}
         ],
         function (err, result) {
-            if (err) {
+            if (err)
                 sendJsonResponse(response, 400, err);
-            } else {
+            else
                 sendLocationsResult(response, result)
-            }
         });
 };
 
 
-/**
- * @param response
- * @param {Array} result
- */
 const sendLocationsResult = function (response, result) {
-    if (result.length) {
-        const locations = [];
-        result.forEach(x => {
-            locations.push({
-                distance: radiansConvertor.getDistanceFromRads(x.dist.calculated),
-                name: x.name,
-                address: x.address,
-                rating: x.rating,
-                facilities: x.facilities,
-                _id: x._id,
-            });
+    const locations = [];
+    result.forEach(x => {
+        locations.push({
+            distance: x.dist.calculated,
+            name: x.name,
+            address: x.address,
+            rating: x.rating,
+            facilities: x.facilities,
+            _id: x._id,
         });
-        sendJsonResponse(response, 200, locations);
-    } else
-        sendJsonResponse(response, 404, "locations not found")
+    });
+    sendJsonResponse(response, 200, locations);
 };
 
 
@@ -173,7 +168,7 @@ module.exports.locationsDeleteOne = function (request, response) {
 };
 
 
-const sendJsonResponse = function (res, status, content) {
-    res.status(status);
-    res.json(content);
+const sendJsonResponse = function (response, status, content) {
+    response.status(status);
+    response.json(content);
 };
