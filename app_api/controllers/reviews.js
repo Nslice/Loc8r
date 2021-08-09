@@ -8,13 +8,18 @@ module.exports.reviewsCreate = function (request, response) {
         Location.findById(locationId)
             .select("reviews")
             .exec(function (err, location) {
-                if (err)
+                if (err) {
+                    console.log(err);
                     sendJsonResponse(response, 400, err);
+                }
                 else
                     addReview(request, response, location);
             });
-    } else
-        sendJsonResponse(response, 400, {message: "No location_id in request"});
+    } else {
+        const err = {message: "No location_id in request"};
+        console.log(err);
+        sendJsonResponse(response, 400, err);
+    }
 };
 
 
@@ -26,13 +31,15 @@ const addReview = function (request, response, location) {
             author: request.body.author,
             rating: request.body.rating,
             reviewText: request.body.reviewText,
-            createdOn: new Date()
         };
+
         location.reviews.push(newReview);
 
         location.save(function (err, loc) {
-            if (err)
+            if (err) {
+                console.log(err);
                 sendJsonResponse(response, 400, err);
+            }
             else {
                 updateAvgRating(loc);
                 sendJsonResponse(response, 201, newReview);
@@ -62,14 +69,16 @@ module.exports.reviewsReadOne = function (request, response) {
         Location.findById(request.params.location_id)
             .select("name reviews")
             .exec(function (err, location) {
-                if (err)
+                if (err) {
+                    console.log(err);
                     sendJsonResponse(response, 400, err);
+                }
                 else if (!location)
                     sendJsonResponse(response, 404, {message: "location_id not found"});
                 else {
                     if (location.reviews && location.reviews.length) {
                         const review = location.reviews.id(request.params.review_id);
-                        if (review == null) // TODO: вот эту проверку надо наверное перепитсать на if (!review)
+                        if (!review)
                             sendJsonResponse(response, 404, {message: "review_id not found"});
                         else {
                             const response = {
@@ -86,8 +95,11 @@ module.exports.reviewsReadOne = function (request, response) {
                         sendJsonResponse(response, 404, {message: "No reviews found"});
                 }
             });
-    } else
-        sendJsonResponse(response, 400, {message: "No location_id, review_id in request"});
+    } else {
+        const err = {message: "No location_id, review_id in request"};
+        console.log(err);
+        sendJsonResponse(response, 400, err);
+    }
 };
 
 
@@ -97,8 +109,10 @@ module.exports.reviewsUpdateOne = function (request, response) {
         Location.findById(request.params.location_id)
             .select("reviews")
             .exec(function (err, location) {
-                if (err)
+                if (err) {
+                    console.log(err);
                     sendJsonResponse(response, 400, err);
+                }
                 else if (!location)
                     sendJsonResponse(response, 404, {message: "location_id not found"});
                 else {
@@ -112,8 +126,10 @@ module.exports.reviewsUpdateOne = function (request, response) {
                             review.reviewText = request.body.reviewText;
 
                             location.save(function (err, loc) {
-                                if (err)
+                                if (err) {
+                                    console.log(err);
                                     sendJsonResponse(response, 400, err);
+                                }
                                 else {
                                     updateAvgRating(loc);
                                     sendJsonResponse(response, 200, review);
@@ -125,8 +141,11 @@ module.exports.reviewsUpdateOne = function (request, response) {
                         sendJsonResponse(response, 404, {message: "No reviews found"});
                 }
             });
-    } else
-        sendJsonResponse(response, 400, {message: "No location_id, review_id in request"});
+    } else {
+        const err = {message: "No location_id, review_id in request"};
+        console.log(err);
+        sendJsonResponse(response, 400, err);
+    }
 };
 
 
@@ -134,8 +153,10 @@ module.exports.reviewsDeleteOne = function (request, response) {
     if (request.params && request.params.location_id && request.params.review_id) {
         Location.findById(request.params.location_id)
             .exec(function (err, location) {
-                if (err)
+                if (err) {
+                    console.log(err);
                     sendJsonResponse(response, 400, err);
+                }
                 else if (!location)
                     sendJsonResponse(response, 404, {message: "location_id not found"});
                 else {
@@ -146,8 +167,10 @@ module.exports.reviewsDeleteOne = function (request, response) {
                         else {
                             review.remove();
                             location.save(function (err) {
-                                if (err)
+                                if (err) {
+                                    console.log(err);
                                     sendJsonResponse(response, 400, err);
+                                }
                                 else {
                                     updateAvgRating(location);
                                     sendJsonResponse(response, 204, null);
@@ -158,8 +181,11 @@ module.exports.reviewsDeleteOne = function (request, response) {
                         sendJsonResponse(response, 404, {message: "No reviews found"});
                 }
             });
-    } else
+    } else {
+        const err = {message: "No location_id, review_id in request"};
+        console.log(err);
         sendJsonResponse(response, 400, {message: "No location_id, review_id in request"});
+    }
 };
 
 

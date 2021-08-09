@@ -2,20 +2,6 @@ const mongoose = require("mongoose");
 const Location = mongoose.model("Location");
 
 
-
-// TODO: для нового GeoJSON объекта в aggregate $geoNear можно указывать метры, так что это не нужно
-const radiansConvertor = (function () {
-    const earthRadius = 6371;
-    const getDistanceFromRads = rads => rads * earthRadius;
-    const getRadsFromDistance = distance => distance / earthRadius;
-
-    return {
-        getDistanceFromRads,
-        getRadsFromDistance
-    };
-})();
-
-
 module.exports.locationsListByDistance = function (request, response) {
     const lng = Number(request.query.lng);
     const lat = Number(request.query.lat);
@@ -23,7 +9,9 @@ module.exports.locationsListByDistance = function (request, response) {
     const limit = Number(request.query.limit) || 10;
 
     if (Number.isNaN(lng) || Number.isNaN(lat)) {
-        sendJsonResponse(response, 400, {message: "'lng' and 'lat' query parameters are required"});
+        const err = {message: "'lng' and 'lat' query parameters are required"};
+        console.log(err);
+        sendJsonResponse(response, 400, err);
         return;
     }
 
@@ -39,8 +27,10 @@ module.exports.locationsListByDistance = function (request, response) {
             {$limit: limit}
         ],
         function (err, result) {
-            if (err)
+            if (err) {
+                console.log(err);
                 sendJsonResponse(response, 400, err);
+            }
             else
                 sendLocationsResult(response, result)
         });
@@ -67,7 +57,7 @@ module.exports.locationsCreate = function (request, response) {
     Location.create({
             name: request.body.name,
             address: request.body.address,
-            facilities: request.body.facilities.split(/,\s*/), // TODO: вынести в метод parseFacilities
+            facilities: parseFacilitiesString(request.body.facilities),
             coords: [Number.parseFloat(request.body.lng), Number.parseFloat(request.body.lat)],
             openingTimes: [
                 {
@@ -85,11 +75,22 @@ module.exports.locationsCreate = function (request, response) {
             ]
         },
         function (err, location) {
-            if (err)
+            if (err) {
+                console.log(err);
                 sendJsonResponse(response, 400, err);
+            }
             else
                 sendJsonResponse(response, 201, location);
         });
+};
+
+
+/**
+ * @param {String} facilities
+ * @return {Array}
+ */
+const parseFacilitiesString = function (facilities) {
+    return facilities.split(/,\s*/);
 };
 
 
@@ -97,15 +98,20 @@ module.exports.locationsReadOne = function (request, response) {
     if (request.params && request.params.location_id) {
         Location.findById(request.params.location_id)
             .exec(function (err, location) {
-                if (err)
+                if (err) {
+                    console.log(err);
                     sendJsonResponse(response, 400, err);
+                }
                 else if (!location)
                     sendJsonResponse(response, 404, {message: "location_id not found"});
                 else
-                    sendJsonResponse(response, 200, location)
+                    sendJsonResponse(response, 200, location);
             });
-    } else
-        sendJsonResponse(response, 400, {message: "No location_id in request"})
+    } else {
+        const err = {message: "No location_id in request"};
+        console.log(err);
+        sendJsonResponse(response, 400, err);
+    }
 };
 
 
@@ -115,14 +121,16 @@ module.exports.locationsUpdateOne = function (request, response) {
         Location.findById(request.params.location_id)
             .select("-reviews -rating")
             .exec(function (err, location) {
-                if (err)
+                if (err) {
+                    console.log(err);
                     sendJsonResponse(response, 400, err);
+                }
                 else if (!location)
                     sendJsonResponse(response, 404, {message: "location_id not found"});
                 else {
                     location.name = request.body.name;
                     location.address = request.body.address;
-                    location.facilities = request.body.facilities.split(/,\s*/); // TODO: вынести в метод parseFacilities
+                    location.facilities = parseFacilitiesString(request.body.facilities),
                     location.coords = [Number.parseFloat(request.body.lng), Number.parseFloat(request.body.lat)];
                     location.openingTimes = [
                         {
@@ -140,15 +148,20 @@ module.exports.locationsUpdateOne = function (request, response) {
                     ];
 
                     location.save(function (err, loc) {
-                        if (err)
+                        if (err) {
+                            console.log(err);
                             sendJsonResponse(response, 400, err);
+                        }
                         else
                             sendJsonResponse(response, 200, loc);
                     });
                 }
             });
-    } else
-        sendJsonResponse(response, 400, {message: "No location_id in request"});
+    } else {
+        const err = {message: "No location_id in request"};
+        console.log(err);
+        sendJsonResponse(response, 400, err);
+    }
 }
 
 
@@ -156,15 +169,20 @@ module.exports.locationsDeleteOne = function (request, response) {
     if (request.params && request.params.location_id) {
         Location.findByIdAndRemove(request.params.location_id)
             .exec(function (err, location) {
-                if (err)
+                if (err) {
+                    console.log(err);
                     sendJsonResponse(response, 400, err);
+                }
                 else if (!location)
                     sendJsonResponse(response, 404, {message: "location_id not found"});
                 else
                     sendJsonResponse(response, 204, null);
             });
-    } else
-        sendJsonResponse(response, 400, {message: "No location_id in request"});
+    } else {
+        const err = {message: "No location_id in request"};
+        console.log(err);
+        sendJsonResponse(response, 400, err);
+    }
 };
 
 

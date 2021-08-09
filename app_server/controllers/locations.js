@@ -3,21 +3,20 @@ const moment = require("moment");
 const _ = require("lodash");
 const request = require("request");
 
+
 const port = process.env.PORT || "3000";
 const apiOptions = (process.env.NODE_ENV === "production")
     ? {server: process.env.SERVER_URI}
     : {server: `http://localhost:${port}`};
 
 
-
-// TODO: отрефакторить
-module.exports.homeList = function (requestArg, response) {
+module.exports.homeList = function (cntrlRequest, cntrlResponse) {
     const requestOptions = {
         url: `${apiOptions.server}/api/locations`,
         method: "GET",
         json: {},
         qs: {
-            lng: 74.68263823715606,
+            lng: 74.68263823715606, // TODO: хардкод убрать
             lat: 42.884340390920535,
             max: 10500
         }
@@ -25,14 +24,14 @@ module.exports.homeList = function (requestArg, response) {
 
     request(requestOptions, function (err, apiResponse, locations) {
         if (apiResponse.statusCode === 200 && Array.isArray(locations))
-            locations.forEach(x => x.distance = _formatDistance(x.distance));
+            locations.forEach(x => x.distance = formatDistance(x.distance));
         else
             console.log(`homeList controller, apiResponse.statusCode: ${chalk.red(apiResponse.statusCode)}`);
 
-        renderHomepage(requestArg, response, locations);
+        renderHomepage(cntrlRequest, cntrlResponse, locations);
     });
 
-    const _formatDistance = (dist) => {
+    const formatDistance = (dist) => {
         if (!isNaN(dist) && Number.isFinite(dist)) {
             if (dist >= 1000)
                 return `${_.round(dist / 1000, 1)} km`;
@@ -66,76 +65,46 @@ const renderHomepage = function (request, response, locations) {
 };
 
 
+module.exports.locationInfo = function (cntrlRequest, cntrlResponse) {
+    getLocationInfo(cntrlRequest, cntrlResponse, renderDetailPage);
+};
 
 
-
-module.exports.locationInfo = function (requestArg, response) {
+const getLocationInfo = function (cntrlRequest, cntrlResponse, callback) {
     const requestOptions = {
-        url: `${apiOptions.server}/api/locations/${requestArg.params.location_id}`,
+        url: `${apiOptions.server}/api/locations/${cntrlRequest.params.location_id}`,
         method: "GET",
         json: {}
     };
 
     request(requestOptions, function (err, apiResponse, location) {
-        location.coords.lng = location.coords[0];
-        location.coords.lat = location.coords[1];
-        location.reviews
-            .forEach(x => x.createdOn = moment(new Date(x.createdOn)).format("DD.MM.YYYY"));
+        if (apiResponse.statusCode === 200) {
+            location.coords.lng = location.coords[0];
+            location.coords.lat = location.coords[1];
+            if (Array.isArray(location.reviews)) {
+                const formatDate = (str) => moment(new Date(str)).format("HH:mm, DD.MM.YYYY");
+                location.reviews.forEach(x => x.createdOn = formatDate(x.createdOn));
+            }
 
-        renderDetailPage(requestArg, response, location);
+            callback(cntrlRequest, cntrlResponse, location);
+        } else
+            showError(cntrlRequest, cntrlResponse, apiResponse.statusCode);
     });
+};
 
-    // response.render("location-info", {
-    //     title: "Location info",
-    //     sidebar: {
-    //         context: 'is on Loc8r because it has accessible wifi and space to sit down with your laptop and get some work done.',
-    //         callToAction: 'If you\'ve been and you like it - or if you don\'t - please leave a review to help other people just like you.'
-    //     },
-    //     location: {
-    //         name: "Starcups",
-    //         address: "125 High Street, Reading, RG6 1PS",
-    //         rating: 3,
-    //         facilities: ["Hot drinks", "Food", "Premium wifi"],
-    //         coords: {
-    //             lat: 51.455041,
-    //             lng: -0.9690884
-    //         },
-    //
-    //         openingTimes: [
-    //             {
-    //                 days: "Monday - Friday",
-    //                 opening: "07:00 am",
-    //                 closing: "07:00 pm",
-    //                 closed: false
-    //             },
-    //             {
-    //                 days: "Saturday",
-    //                 opening: "08:00 am",
-    //                 closing: "05:00 pm",
-    //                 closed: false
-    //             },
-    //             {
-    //                 days: "Sunday",
-    //                 closed: true
-    //             }
-    //         ],
-    //
-    //         reviews: [
-    //             {
-    //                 author: "Simon Holmes",
-    //                 rating: 5,
-    //                 timestamp: "16 July 2013",
-    //                 reviewText: "What a great place. I can't say enough good things about it."
-    //             },
-    //             {
-    //                 author: "Charlie Chaplin",
-    //                 rating: 3,
-    //                 timestamp: "16 June 2013",
-    //                 reviewText: "It was okay. Coffee wasn't great, but the wifi was fast."
-    //             }
-    //         ]
-    //     }
-    // });
+
+const showError = function (request, response, status) {
+    let title, content;
+    if (status === 404) {
+        title = "404, page not found";
+        content = "Oh, dear. Looks like we can't find this page. Sorry.";
+    } else {
+        title = `${status}, something's gone wrong`;
+        content = "Something, somewhere, has gone just a little bit wrong.";
+    }
+
+    response.status(status);
+    response.render("generic-text", {title, content});
 };
 
 
@@ -152,6 +121,44 @@ const renderDetailPage = function (request, response, location) {
 };
 
 
-module.exports.addReview = function (req, res) {
-    res.render("location-review-form", {title: "Add review"});
+module.exports.addReview = function (cntrlRequest, cntrlResponse) {
+    getLocationInfo(cntrlRequest, cntrlResponse, renderReviewForm);
+};
+
+
+const renderReviewForm = function (request, response, location) {
+    response.render("location-review-form", {
+        title: `Review ${location.name} on Loc8r`,
+        pageHeader: {title: `Review ${location.name}`},
+        error: request.query.err
+    });
+};
+
+
+module.exports.doAddReview = function (cntrlRequest, cntrlResponse) {
+    const locationId = cntrlRequest.params.location_id;
+    const requestOptions = {
+        url: `${apiOptions.server}/api/locations/${locationId}/reviews`,
+        method: "POST",
+        json: {
+            author: cntrlRequest.body.name,
+            rating: Number.parseInt(cntrlRequest.body.rating),
+            reviewText: cntrlRequest.body.review
+        }
+    };
+
+    if (!requestOptions.json.author || !requestOptions.json.rating || !requestOptions.json.reviewText)
+        cntrlResponse.redirect(`/location/${locationId}/reviews/new?err=val`);
+    else {
+        request(requestOptions, function (err, apiResponse, review) {
+            if (apiResponse.statusCode === 201)
+                cntrlResponse.redirect(`/location/${locationId}`);
+            else if (apiResponse.statusCode === 400 && review.name && review.name === "ValidationError") {
+                cntrlResponse.redirect(`/location/${locationId}/reviews/new?err=val`);
+            } else {
+                console.log(review);
+                showError(cntrlRequest, cntrlResponse, apiResponse.statusCode);
+            }
+        });
+    }
 };
