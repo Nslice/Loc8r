@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+
 const ctrlLocations = require("../controllers/locations");
 router.get("/", ctrlLocations.homeList);
 router.get("/location/:location_id", ctrlLocations.locationInfo);

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html ng-app="loc8rApp">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loc8r - find a place to work with wifi</title>
+    <link rel="stylesheet" href="/bootstrap/css/amelia.bootstrap.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header"><a class="navbar-brand" href="/">Loc8r</a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main"><span
+                    class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+                <li><a href="/about/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="page-header" id="banner">
+        <div class="row">
+            <div class="col-lg-6"><h1>Loc8r<small>&nbsp;Find places to work with wifi near you</small></h1></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-8" ng-controller="locationListCtrl"><label for="filter">Filter
+            results</label><input id="filter" type="text" name="filter" ng-model="textFilter">
+            <div class="error">{{message}}</div>
+            <div class="row list-group">
+                <div class="col-xs-12 list-group-item" ng-repeat="location in data.locations | filter: textFilter"><h4>
+                    <a href="/location/{{location._id}}">{{location.name}} &nbsp;</a><small rating-stars
+                                                                                            rating="location.rating"></small><span
+                        class="badge pull-right badge-default">{{location.distance | formatDistance}}</span></h4>
+                    <p class="address">{{location.address}}</p>
+                    <p><span ng-repeat="facility in location.facilities"><span
+                            class="label label-warning label-faciliy">{{facility}}</span>&nbsp;</span></p></div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-4"><p class="lead">Looking for wifi and a seat? Loc8r helps you find places to work
+            when out and about.Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you're looking
+            for.</p></div>
+    </div>
+    <footer>
+        <div class="row">
+            <div class="col-xs-12"><small>&copy; Simon Holmes 2014</small></div>
+        </div>
+    </footer>
+</div><!-- библиотеки:-->
+<script src="/scripts/jquery-3.6.0.min.js"></script>
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+<script src="/angularjs/angular.min.js"></script>
+<script src="/scripts/lodash.js"></script><!-- мои исходники:-->
+<script src="/scripts/validation.js"></script>
+<script src="/angularjs/loc8rApp.js"></script>
+</body>
+</html>

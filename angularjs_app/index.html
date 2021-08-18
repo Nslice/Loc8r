@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="angular.min.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+
+</head>
+<body ng-controller="myController">
+
+<input ng-model="myInput"/>
+<h1>Hello {{myInput}}</h1>
+
+<ul>
+    <li ng-repeat="item in items">{{item}}</li>
+</ul>
+
+
+<div class="col-xs-12 col-sm-8" ng-controller="locationListCtrl">
+    <div class="error">{{message}}</div>
+    <div class="row list-group">
+        <div class="col-xs-12 list-group-item" ng-repeat="location in data.locations"><h4><a
+                href="/location/{{location._id}}">{{location.name}}</a><small>{{location.rating}}</small><span
+                class="badge pull-right badge-default">{{location.distance}}</span></h4>
+            <p class="address">{{location.address}}</p>
+            <p><span class="label label-warning label-faciliy"
+                     ng-repeat="facility in location.facilities">{{facility}}</span></p></div>
+    </div>
+</div>
+
+
+<div ng-controller="testCtrl">
+    <h1> {{message}} </h1>
+</div>
+
+</body>
+</html>
