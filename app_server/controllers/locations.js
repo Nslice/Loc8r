@@ -11,42 +11,11 @@ const apiOptions = (process.env.NODE_ENV === "production")
 
 
 module.exports.homeList = function (cntrlRequest, cntrlResponse) {
-    renderHomepageTest(cntrlRequest, cntrlResponse);
-
-    // TODO посмотрю что есть тут и нет в контролере ангуляра и доработать
-    // const requestOptions = {
-    //     url: `${apiOptions.server}/api/locations`,
-    //     method: "GET",
-    //     json: {},
-    //     qs: {
-    //         lng: 74.68263823715606, // TODO: хардкод убрать
-    //         lat: 42.884340390920535,
-    //         max: 10500
-    //     }
-    // };
-    //
-    // request(requestOptions, function (err, apiResponse, locations) {
-    //     if (apiResponse.statusCode === 200 && Array.isArray(locations))
-    //         locations.forEach(x => x.distance = formatDistance(x.distance));
-    //     else
-    //         console.log(`homeList controller, apiResponse.statusCode: ${chalk.red(apiResponse.statusCode)}`);
-    //
-    //     renderHomepage(cntrlRequest, cntrlResponse, locations);
-    // });
-    //
-    // const formatDistance = (dist) => {
-    //     if (!isNaN(dist) && Number.isFinite(dist)) {
-    //         if (dist >= 1000)
-    //             return `${_.round(dist / 1000, 1)} km`;
-    //         else
-    //             return `${_.round(dist, 0)} m`;
-    //     } else
-    //         return "?";
-    // };
+    renderHomepage(cntrlRequest, cntrlResponse);
 };
 
 
-const renderHomepageTest = function (res, req) {
+const renderHomepage = function (res, req) {
     req.render("locations-list", {
         title: "Loc8r - find a place to work with wifi",
         pageHeader: {
@@ -55,28 +24,6 @@ const renderHomepageTest = function (res, req) {
         },
         sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about." +
             "Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you're looking for.",
-    });
-};
-
-
-const renderHomepage = function (request, response, locations) {
-    let message;
-    if (!Array.isArray(locations)) {
-        message = "API lookup error";
-        locations = [];
-    } else if (!locations.length)
-        message = "No places found nearby";
-
-    response.render("locations-list", {
-        title: "Loc8r - find a place to work with wifi",
-        pageHeader: {
-            title: "Loc8r",
-            strapLine: "Find places to work with wifi near you"
-        },
-        sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about." +
-            "Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you're looking for.",
-        locations: locations,
-        message: message
     });
 };
 
