@@ -1,7 +1,5 @@
 extends layout
 
-include _includes/sharedHtmlFunctions
-
 
 block content
     #banner.page-header
@@ -24,7 +22,7 @@ block content
                     p.address {{location.address}}
                     p
                         span(ng-repeat="facility in location.facilities")
-                            span.label.label-warning.label-faciliy
+                            span.label.label-warning.label-facility
                                 | {{facility}}
                             | &nbsp;
         .col-xs-12.col-sm-4

@@ -35,7 +35,7 @@ module.exports.locationsListByDistance = function (request, response) {
                 } else
                     sendLocationsResult(response, result)
             });
-    }, 3555);
+    }, 1);
 };
 
 
