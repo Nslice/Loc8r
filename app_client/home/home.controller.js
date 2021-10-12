@@ -44,9 +44,8 @@
 
         geolocation.getPosition(getData, showError, noGeo);
     };
-
-
     homeCtrl.$inject = ["$scope", "loc8rData", "geolocation"];
+
 
     angular.module("loc8rApp")
         .controller("homeCtrl", homeCtrl);

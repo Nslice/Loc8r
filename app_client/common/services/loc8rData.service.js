@@ -5,12 +5,23 @@
     // Mongoose встроено явно неправильно определяетс расстояния между точками, не учитывается высота
     const loc8rData = function ($http) {
         const locationsByCoords = function (lat, lng) {
-            return $http.get(`/api/locations?lng=${lng}&lat=${lat}`)
+            return $http.get(`/api/locations?lng=${lng}&lat=${lat}`);
         };
 
-        return {locationsByCoords};
-    };
+        const locationById = function (locationId) {
+            return $http.get(`/api/locations/${locationId}`);
+        };
 
+        const addReviewById = function (locationId, data) {
+            return $http.post(`/api/locations/${locationId}/reviews`, data);
+        };
+
+        return {
+            locationsByCoords,
+            locationById,
+            addReviewById
+        };
+    };
     loc8rData.$inject = ["$http"];
 
     angular.module("loc8rApp")
