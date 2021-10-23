@@ -7,6 +7,7 @@ module.exports.locationsListByDistance = function (request, response) {
     const lat = Number(request.query.lat);
     const max = Number(request.query.max) || 10000;
     const limit = Number(request.query.limit) || 10;
+    console.log("locationsListByDistance");
 
     if (Number.isNaN(lng) || Number.isNaN(lat)) {
         const err = {message: "'lng' and 'lat' query parameters are required"};
