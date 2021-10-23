@@ -21,7 +21,6 @@
             .otherwise({redirectTo: "/"});
 
 
-        //https://stackoverflow.com/questions/16677528/location-switching-between-html5-and-hashbang-mode-link-rewriting
         $locationProvider.html5Mode({
             enabled: true,
             requireBase: false

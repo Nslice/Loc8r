@@ -27,7 +27,7 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-console.log(`App started ${moment().format("HH:mm DD.MM.YYYY")}`);
+console.log(`App started ${moment().format("HH:mm:ss DD.MM.YYYY")}`);
 
 /**
  * Normalize a port into a number, string, or false.

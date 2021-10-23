@@ -15,13 +15,10 @@
 
 
         thisRef.onSubmit = function () {
-            if (!thisRef.formData || !thisRef.formData.name || !thisRef.formData.rating || !thisRef.formData.reviewText) {
+            if (!thisRef.formData || !thisRef.formData.name || !thisRef.formData.rating || !thisRef.formData.reviewText)
                 thisRef.formError = "All fields required, please try again";
-                return true;
-            } else {
+            else
                 thisRef.doAddReview(locationData.id, thisRef.formData)
-                return true;
-            }
         };
 
 

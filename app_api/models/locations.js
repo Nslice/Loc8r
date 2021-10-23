@@ -23,7 +23,7 @@ const reviewSchema = new mongoose.Schema({
     rating: {
         type: Number,
         required: true,
-        min: 0,
+        min: 1,
         max: 5
     },
     reviewText: {
@@ -50,7 +50,7 @@ const locationSchema = new mongoose.Schema({
         max: 5
     },
     facilities: [String],
-    coords: { //TODO: вот это не пойдет надо переписать схему
+    coords: {
         type: [Number],
         required: true,
         index: "2dsphere"

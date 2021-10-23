@@ -19,7 +19,7 @@
                 },
                 err => {
                     console.log(err);
-                    this.message = "Something wrong";
+                    thisRef.message = "Something wrong";
                 }
             );
 
@@ -40,8 +40,10 @@
             });
 
             modalInstance.result.then(data => {
-                thisRef.location.reviews.push(data);
-            });
+                    thisRef.location.reviews.push(data)
+                },
+                err => console.log(err)
+            );
         };
 
     };
