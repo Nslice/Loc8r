@@ -64,7 +64,7 @@ function minificateCode() {
     const uglified = uglifyJs.minify(appClientFiles, {compress: true});
     fs.writeFile("public/angularjs/loc8r.min.js", uglified.code, function (err) {
         if (err)
-            console.log();
+            console.log(err);
         else
             console.log("Script generated and saved: 'loc8r.min.js");
     });
