@@ -7,7 +7,6 @@ module.exports.locationsListByDistance = function (request, response) {
     const lat = Number(request.query.lat);
     const max = Number(request.query.max) || 10000;
     const limit = Number(request.query.limit) || 10;
-    console.log("locationsListByDistance");
 
     if (Number.isNaN(lng) || Number.isNaN(lat)) {
         const err = {message: "'lng' and 'lat' query parameters are required"};
@@ -16,27 +15,24 @@ module.exports.locationsListByDistance = function (request, response) {
         return;
     }
 
-    // TODO: добавил для теста анимации загрузки, убрать потом
-    setTimeout( function () {
-        Location.aggregate([
-                {
-                    $geoNear: {
-                        near: {type: "Point", coordinates: [lng, lat]},
-                        spherical: true,
-                        distanceField: "dist.calculated",
-                        maxDistance: max
-                    }
-                },
-                {$limit: limit}
-            ],
-            function (err, result) {
-                if (err) {
-                    console.log(err);
-                    sendJsonResponse(response, 400, err);
-                } else
-                    sendLocationsResult(response, result)
-            });
-    }, 1);
+    Location.aggregate([
+            {
+                $geoNear: {
+                    near: {type: "Point", coordinates: [lng, lat]},
+                    spherical: true,
+                    distanceField: "dist.calculated",
+                    maxDistance: max
+                }
+            },
+            {$limit: limit}
+        ],
+        function (err, result) {
+            if (err) {
+                console.log(err);
+                sendJsonResponse(response, 400, err);
+            } else
+                sendLocationsResult(response, result)
+        });
 };
 
 

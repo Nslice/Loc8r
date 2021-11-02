@@ -1,8 +1,31 @@
 const mongoose = require("mongoose");
 const Location = mongoose.model("Location");
+const User = mongoose.model("User");
 
 
 module.exports.reviewsCreate = function (request, response) {
+    getAuthor(request, response, reviewCreate);
+};
+
+
+const getAuthor = function (request, response, callback) {
+    if (request.payload && request.payload.email) {
+        User.findOne({email: request.payload.email})
+            .exec(function (err, user) {
+                if (err) {
+                    console.log(err);
+                    sendJsonResponse(response, 400, err);
+                } else if (!user)
+                    sendJsonResponse(response, 404, {message: "User not found"})
+
+                callback(request, response, user);
+            });
+    } else
+        sendJsonResponse(response, 404, {message: "User not found"});
+};
+
+
+const reviewCreate = function (request, response, user) {
     const locationId = request.params.location_id;
     if (locationId) {
         Location.findById(locationId)
@@ -11,9 +34,8 @@ module.exports.reviewsCreate = function (request, response) {
                 if (err) {
                     console.log(err);
                     sendJsonResponse(response, 400, err);
-                }
-                else
-                    addReview(request, response, location);
+                } else
+                    addReview(request, response, location, user);
             });
     } else {
         const err = {message: "No location_id in request"};
@@ -23,12 +45,12 @@ module.exports.reviewsCreate = function (request, response) {
 };
 
 
-const addReview = function (request, response, location) {
+const addReview = function (request, response, location, user) {
     if (!location)
         sendJsonResponse(response, 404, {message: "location_id not found"});
     else {
         const newReview = {
-            author: request.body.author,
+            author: user.name,
             rating: request.body.rating,
             reviewText: request.body.reviewText,
         };

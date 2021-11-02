@@ -1,10 +1,15 @@
-const createError = require("http-errors");
+require("dotenv").config({path: ".env"});
+
 const express = require("express");
+const createError = require("http-errors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-require("./app_api/models/db");
 
+const passport = require("passport");
+
+require("./app_api/models/db");
+require("./app_api/config/passport");
 
 
 minificateCode();
@@ -20,6 +25,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "app_client")));
 app.use("/lodash", express.static(path.join(__dirname, "node_modules", "lodash")));
 
+
+app.use(passport.initialize());
+
 setRoutes();
 
 // catch 404 and forward to error handler
@@ -29,13 +37,18 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+    // set locals, only providing error in development
+    if (err.name === "UnauthorizedError") {
+        res.status(401);
+        res.json({message: `${err.name}: ${err.message}`});
+        return;
+    }
+    res.locals.message = err.message;
+    res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+    // render the error page
+    res.status(err.status || 500);
+    res.render("error");
 });
 
 
@@ -51,10 +64,14 @@ function minificateCode() {
         aboutCtrl: fs.readFileSync("app_client/about/about.controller.js", "utf8"),
         locationDetailCtrl: fs.readFileSync("app_client/locationDetail/locationDetail.controller.js", "utf8"),
         reviewModalCtrl: fs.readFileSync("app_client/reviewModal/reviewModal.controller.js", "utf8"),
+        registerCtrl: fs.readFileSync("app_client/auth/register/register.controller.js", "utf8"),
+        loginCtrl: fs.readFileSync("app_client/auth/login/login.controller.js", "utf8"),
         geolocationService: fs.readFileSync("app_client/common/services/geolocation.service.js", "utf8"),
         loc8rDataService: fs.readFileSync("app_client/common/services/loc8rData.service.js", "utf8"),
+        authentication: fs.readFileSync("app_client/common/services/authentication.service.js", "utf8"),
         pageHeaderDirective: fs.readFileSync("app_client/common/directives/pageHeader/pageHeader.directive.js", "utf8"),
         navigationDirective: fs.readFileSync("app_client/common/directives/navigation/navigation.directive.js", "utf8"),
+        navigationCtrl: fs.readFileSync("app_client/common/directives/navigation/navigation.controller.js", "utf8"),
         footerGenericDirective: fs.readFileSync("app_client/common/directives/footerGeneric/footerGeneric.directive.js", "utf8"),
         ratingStarsDirective: fs.readFileSync("app_client/common/directives/ratingStars/ratingStars.directive.js", "utf8"),
         formatDistanceFilter: fs.readFileSync("app_client/common/filters/formatDistance.filter.js", "utf8"),
@@ -72,7 +89,7 @@ function minificateCode() {
 
 
 function setRoutes() {
-    const routesApi = require("./app_api/routes/locations");
+    const routesApi = require("./app_api/routes/index");
     app.use("/api", routesApi);
 
 

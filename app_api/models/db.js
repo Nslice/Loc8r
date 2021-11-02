@@ -46,3 +46,4 @@ process.on("SIGUSR2", () => {
 
 
 require("./locations");
+require("./user");

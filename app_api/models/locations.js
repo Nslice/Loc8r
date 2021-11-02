@@ -60,5 +60,5 @@ const locationSchema = new mongoose.Schema({
 });
 
 
-// 3 параметр название коллекции MongoDB - необязательный
-mongoose.model("Location", locationSchema);
+// 3 параметр название коллекции MongoDB
+mongoose.model("Location", locationSchema, "locations");

@@ -45,7 +45,6 @@
                 err => console.log(err)
             );
         };
-
     };
     locationDetailCtrl.$inject = ["$routeParams", "loc8rData", "$uibModal"];
 
