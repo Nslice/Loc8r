@@ -9,7 +9,7 @@
 
         thisRef.logout = function () {
             authentication.logout();
-            $location.path("/");
+            $location.path(thisRef.currentPath);
             thisRef.isLoggedIn = authentication.isLoggedIn();
         };
     };

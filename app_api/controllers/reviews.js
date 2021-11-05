@@ -9,7 +9,7 @@ module.exports.reviewsCreate = function (request, response) {
 
 
 const getAuthor = function (request, response, callback) {
-    if (request.payload && request.payload.email) {
+    if (request.payload?.email) {
         User.findOne({email: request.payload.email})
             .exec(function (err, user) {
                 if (err) {

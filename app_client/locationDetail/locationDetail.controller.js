@@ -1,6 +1,9 @@
 (function () {
-    const locationDetailCtrl = function ($routeParams, loc8rData, $uibModal) {
+    const locationDetailCtrl = function ($routeParams, $location, $uibModal, loc8rData, authentication) {
         const thisRef = this;
+
+        thisRef.isLoggedIn = authentication.isLoggedIn;
+        thisRef.currentPath = $location.path();
 
         loc8rData.locationById($routeParams.location_id)
             .then(response => {
@@ -46,7 +49,7 @@
             );
         };
     };
-    locationDetailCtrl.$inject = ["$routeParams", "loc8rData", "$uibModal"];
+    locationDetailCtrl.$inject = ["$routeParams", "$location", "$uibModal", "loc8rData", "authentication"];
 
 
     angular.module("loc8rApp")

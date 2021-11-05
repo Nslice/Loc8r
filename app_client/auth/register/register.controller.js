@@ -1,5 +1,5 @@
 (function () {
-    const registerCtrl = function ($location, authentication) {
+    const registerCtrl = function ($location,  $timeout, authentication) {
         const thisRef = this;
 
         thisRef.pageHeader = {title: "Create a new Loc8r account"};
@@ -8,7 +8,7 @@
         thisRef.onSubmit = function () {
             thisRef.formError = "";
             if (!thisRef.credentials?.name || !thisRef.credentials.email || !thisRef.credentials.password)
-                thisRef.formError = "All fields required, please try again";
+                $timeout(() =>thisRef.formError = "All fields required, please try again", 200);
             else
                 thisRef.doRegister();
         };
@@ -23,7 +23,7 @@
         };
 
     };
-    registerCtrl.$inject = ["$location", "authentication"];
+    registerCtrl.$inject = ["$location", "$timeout", "authentication"];
 
     angular.module("loc8rApp")
         .controller("registerCtrl", registerCtrl);

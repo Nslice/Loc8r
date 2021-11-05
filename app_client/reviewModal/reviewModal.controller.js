@@ -15,7 +15,7 @@
 
 
         thisRef.onSubmit = function () {
-            if (!thisRef.formData?.name || !thisRef.formData.rating || !thisRef.formData.reviewText)
+            if (!thisRef.formData?.rating || !thisRef.formData.reviewText)
                 thisRef.formError = "All fields required, please try again";
             else
                 thisRef.doAddReview(locationData.id, thisRef.formData)
@@ -25,7 +25,6 @@
         thisRef.doAddReview = function (locationId, formData) {
             loc8rData
                 .addReviewById(locationId, {
-                    author: formData.name,
                     rating: formData.rating,
                     reviewText: formData.reviewText
                 })
