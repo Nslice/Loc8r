@@ -5,7 +5,6 @@ const createError = require("http-errors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-
 const passport = require("passport");
 
 require("./app_api/models/db");
@@ -15,6 +14,7 @@ require("./app_api/config/passport");
 minificateCode();
 
 const app = express();
+
 
 app.use(logger("dev"));
 app.use(express.json());

@@ -53,5 +53,6 @@ module.exports.login = function (request, response) {
 
 const sendJsonResponse = function (response, status, content) {
     response.status(status);
+    response.header("Access-Control-Allow-Origin", "*");
     response.json(content);
 };

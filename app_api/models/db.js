@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 
+
+// TODO: перенести это в конфиг .env
 const dbUri = (process.env.NODE_ENV === "production")
     ? process.env.MONGODB_URI
-    : "mongodb://localhost/Loc8r";
+    : "mongodb://127.0.0.1/Loc8r";
 
 
 mongoose.connect(dbUri);
