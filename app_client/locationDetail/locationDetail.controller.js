@@ -24,7 +24,8 @@
                     console.log(err);
                     thisRef.message = "Something wrong";
                 }
-            );
+            )
+            .then();
 
 
         thisRef.popupReviewForm = function () {

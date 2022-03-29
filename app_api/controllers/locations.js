@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Location = mongoose.model("Location");
 
 
+// TODO: в случае если запрос ОК, но ничего не найдено возвращать статус 204
 module.exports.locationsListByDistance = function (request, response) {
     const lng = Number(request.query.lng);
     const lat = Number(request.query.lat);

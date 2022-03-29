@@ -4,7 +4,7 @@ const jwt = require("express-jwt");
 
 
 const auth = jwt({
-    algorithms: ["SHA256"],
+    algorithms: ["HS256"],
     secret: process.env.JWT_SECRET,
     useProperty: "payload"
 });

@@ -2,6 +2,8 @@
     const navigationCtrl = function ($location, authentication) {
         const thisRef = this;
 
+
+        console.log("lodash " + _.now())
         thisRef.currentPath = $location.path();
 
         thisRef.isLoggedIn = authentication.isLoggedIn();
