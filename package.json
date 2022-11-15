@@ -29,5 +29,8 @@
         "pug": "^3.0.2",
         "request": "^2.88.2",
         "uglify-js": "^3.14.3"
+    },
+    "devDependencies": {
+        "heroku": "^7.60.2"
     }
 }
